@@ -1,0 +1,83 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import StratifiedKFold, cross_val_score, train_test_split
+from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
+import os
+
+script_folder = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(script_folder, 'tablecloth_dataset.csv')
+
+df = pd.read_csv(csv_path, sep=';')
+if len(df.columns) == 1:
+    df = pd.read_csv(csv_path, sep=',')
+
+
+df['raw_label'] = df['state'].astype(str) + " " + df['item'].astype(str)
+label_mapping = {
+    'empty plate': 'Empty Plate',
+    'full plate': 'Full Plate',
+    'empty bowl': 'Empty Bowl',
+    'full bowl': 'Full Bowl',
+    'empty muumi_cup_arabia': 'Empty Muumi Cup',
+    'full muumi_cup_arabia': 'Full Muumi Cup',
+    'full coke_0.33l': 'Full 0.33L Coke',
+    'full coke_1.5l': 'Full 1.5L Bottle'
+}
+df['label'] = df['raw_label'].map(label_mapping)
+
+df = df.sort_values(by=['label', 'time']).reset_index(drop=True)
+df['time_diff'] = df.groupby('label')['time'].diff().fillna(0)
+
+df['new_placement'] = (df['time_diff'] > 2.0).astype(int)
+df['placement_id'] = df['label'] + "_" + df['new_placement'].cumsum().astype(str)
+sensor_cols = [f'p{i}' for i in range(16)]
+flattened_df = df.groupby(['placement_id', 'label'])[sensor_cols].mean().reset_index()
+
+output_path = os.path.join(script_folder, 'flattened_dataset.csv')
+flattened_df.to_csv(output_path, index=False, sep=';')
+
+print(f"Original dataset rows: {len(df)}")
+print(f"Flattened dataset rows: {len(flattened_df)}")
+print(f"Saved new dataset to: {output_path}")
+
+X = flattened_df[sensor_cols]
+y = flattened_df['label']
+
+rf = RandomForestClassifier(random_state=42)
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+cv_scores = cross_val_score(rf, X, y, cv=cv, scoring='accuracy')
+
+print(f"\nHonest Flattened 5-Fold CV Accuracy: {cv_scores.mean()*100:.2f}% +- {cv_scores.std()*100:.2f}%")
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+rf_final = RandomForestClassifier(random_state=42)
+rf_final.fit(X_train, y_train)
+
+
+y_pred = rf_final.predict(X_test)
+test_accuracy = accuracy_score(y_test, y_pred)
+print(f"\nFlattened Data Test Accuracy: {test_accuracy*100:.2f}%")
+
+print("\nFlattened Data Classification Report:")
+print(classification_report(y_test, y_pred, digits=2))
+
+classes = sorted(y.unique())
+cm = confusion_matrix(y_test, y_pred, labels=classes)
+
+plt.figure(figsize=(12, 10))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=classes, yticklabels=classes)
+plt.xlabel('Predicted Label', fontsize=12)
+plt.ylabel('True Label', fontsize=12)
+plt.title('Confusion Matrix - Flattened Data (Mean per Placement)', fontsize=14)
+plt.xticks(rotation=45, ha='right')
+plt.yticks(rotation=0)
+plt.tight_layout()
+
+cm_path = os.path.join(script_folder, 'flattened_confusion_matrix.png')
+plt.savefig(cm_path, dpi=300, bbox_inches='tight')
+print(f"\nConfusion matrix saved to: {cm_path}")
+plt.show()
