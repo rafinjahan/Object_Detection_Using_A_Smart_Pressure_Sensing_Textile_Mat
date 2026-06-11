@@ -1,8 +1,14 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
-df = pd.read_csv('step_response_test.csv', sep=';')
+script_folder = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_folder)
+data_folder = os.path.join(project_root, 'data')
+images_folder = os.path.join(project_root, 'images')
+
+df = pd.read_csv(os.path.join(data_folder, 'step_response_test.csv'), sep=';')
 
 df['time_rel'] = df['timestamp'] - df['timestamp'].iloc[0]
 
@@ -36,5 +42,5 @@ ax2.tick_params(axis='y', labelcolor='r')
 plt.title('Sensor Staircase Response', fontsize=14)
 fig.tight_layout()
 
-plt.savefig('staircase_plot_puhdistettu.png', dpi=300)
+plt.savefig(os.path.join(images_folder, 'staircase_plot_puhdistettu.png'), dpi=300)
 print("Plot saved as staircase_plot_puhdistettu.png")
