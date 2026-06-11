@@ -3,6 +3,7 @@ import time
 import csv
 import sys
 import msvcrt
+import os
 
 PORT = 'COM4'
 BAUD = 115200
@@ -13,7 +14,9 @@ except Exception as e:
     print("could not connect to arduino")
     sys.exit()
 
-filename = "step_response_test.csv"
+script_folder = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_folder)
+filename = os.path.join(project_root, "data", "step_response_test.csv")
 
 weight_map = {
     b'0': 0,    

@@ -8,7 +8,8 @@ import seaborn as sns
 import os
 
 script_folder = os.path.dirname(os.path.abspath(__file__))
-csv_path = os.path.join(script_folder, 'tablecloth_dataset_flattened.csv')
+project_root = os.path.dirname(script_folder)
+csv_path = os.path.join(project_root, 'data', 'tablecloth_dataset_flattened.csv')
 df = pd.read_csv(csv_path, sep=';')
 if len(df.columns) == 1:
     df = pd.read_csv(csv_path, sep=',')
@@ -62,6 +63,6 @@ plt.ylabel("True Label", fontsize=12)
 plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
 
-image_path = os.path.join(script_folder, 'confusion_matrix_grouped_cv.png')
+image_path = os.path.join(project_root, 'images', 'confusion_matrix_grouped_cv.png')
 plt.savefig(image_path, dpi=300)
 print(f"Confusion matrix saved to {image_path}")

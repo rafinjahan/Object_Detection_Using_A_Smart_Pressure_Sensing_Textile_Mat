@@ -11,9 +11,10 @@ for key in plt.rcParams:
         plt.rcParams[key] = []
 
 script_folder = os.path.dirname(os.path.abspath(__file__))
-filename = os.path.join(script_folder, "tablecloth_dataset_flattened.csv")
+project_root = os.path.dirname(script_folder)
+filename = os.path.join(project_root, "data", "tablecloth_dataset_flattened.csv")
 
-counts_file = os.path.join(script_folder, "record_counts.json")
+counts_file = os.path.join(project_root, "thesis", "record_counts.json")
 
 try:
     with open(counts_file, 'r') as cf:

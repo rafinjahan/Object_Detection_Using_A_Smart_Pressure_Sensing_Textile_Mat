@@ -1,7 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-df = pd.read_csv('sensitivity_range32.csv', sep=';')
+script_folder = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_folder)
+data_folder = os.path.join(project_root, 'data')
+images_folder = os.path.join(project_root, 'images')
+
+df = pd.read_csv(os.path.join(data_folder, 'sensitivity_range32.csv'), sep=';')
 
 
 df = df[df['avg_resistance_ohms'] > 0]
@@ -27,5 +33,5 @@ plt.xlabel('Pressure (kPa)', fontsize=12)
 plt.ylabel( '($\Delta R / R_0$)', fontsize=12)
 plt.grid(True, linestyle='--', alpha=0.7)
 
-plt.savefig('sensitivity_deltaR_plot.png', dpi=300, bbox_inches='tight')
+plt.savefig(os.path.join(images_folder, 'sensitivity_deltaR_plot.png'), dpi=300, bbox_inches='tight')
 plt.show()

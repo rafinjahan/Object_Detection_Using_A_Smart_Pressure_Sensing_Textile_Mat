@@ -8,7 +8,8 @@ from sklearn.metrics import confusion_matrix, accuracy_score, classification_rep
 import os
 
 script_folder = os.path.dirname(os.path.abspath(__file__))
-csv_path = os.path.join(script_folder, 'tablecloth_dataset.csv')
+project_root = os.path.dirname(script_folder)
+csv_path = os.path.join(project_root, 'data', 'tablecloth_dataset.csv')
 
 df = pd.read_csv(csv_path, sep=';')
 if len(df.columns) == 1:
@@ -36,7 +37,7 @@ df['placement_id'] = df['label'] + "_" + df['new_placement'].cumsum().astype(str
 sensor_cols = [f'p{i}' for i in range(16)]
 flattened_df = df.groupby(['placement_id', 'label'])[sensor_cols].mean().reset_index()
 
-output_path = os.path.join(script_folder, 'flattened_dataset.csv')
+output_path = os.path.join(project_root, 'data', 'flattened_dataset.csv')
 flattened_df.to_csv(output_path, index=False, sep=';')
 
 print(f"Original dataset rows: {len(df)}")
@@ -77,7 +78,7 @@ plt.xticks(rotation=45, ha='right')
 plt.yticks(rotation=0)
 plt.tight_layout()
 
-cm_path = os.path.join(script_folder, 'flattened_confusion_matrix.png')
+cm_path = os.path.join(project_root, 'images', 'flattened_confusion_matrix.png')
 plt.savefig(cm_path, dpi=300, bbox_inches='tight')
 print(f"\nConfusion matrix saved to: {cm_path}")
 plt.show()

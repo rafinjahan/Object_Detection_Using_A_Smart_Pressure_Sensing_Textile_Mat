@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import os
 
 script_folder = os.path.dirname(os.path.abspath(__file__))
-csv_path = os.path.join(script_folder, 'tablecloth_dataset_flattened.csv')
+project_root = os.path.dirname(script_folder)
+csv_path = os.path.join(project_root, 'data', 'tablecloth_dataset_flattened.csv')
 df = pd.read_csv(csv_path, sep=';')
 
 if len(df.columns) == 1:
