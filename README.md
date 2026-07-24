@@ -1,6 +1,7 @@
 # Object Detection Using a Smart Pressure-Sensing Textile Mat
 
 This repository contains the Python code and dataset for my bachelor thesis. The project uses a 4x4 woven piezoresistive pressure mat to classify everyday kitchen objects. It uses a Random Forest machine learning model to read the pressure footprint and total weight.
+I designed a custom printed circuit board using KiCad to upgrade the original breadboard prototype. This custom PCB connects the textile mat directly to the microcontroller and multiplexer for a reliable system. You can see 3D screenshots of the finished board in the images folder.
 
 ## Hardware Setup
 * 4x4 piezoresistive textile mat
@@ -18,8 +19,10 @@ This repository contains the Python code and dataset for my bachelor thesis. The
 ## Project Structure
 * `code/` contains all Python scripts.
 * `data/` contains CSV datasets and measurement files.
+* `hardware/` contains the KiCad PCB project and Gerber manufacturing files and the 3D model of the PCB.
 * `images/` contains generated PNG plots and confusion matrices.
 * `thesis/` contains thesis-related files.
+
 
 ## Project Files
 * `data/tablecloth_dataset_flattened.csv` contains the recorded dataset of physical placements.
